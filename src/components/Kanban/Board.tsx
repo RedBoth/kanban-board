@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { 
   DndContext, 
   type DragEndEvent, 
@@ -14,9 +15,13 @@ import { useKanbanStore } from '../../store/useKanbanStore';
 import { TaskCard } from './TaskCard';
 import { arrayMove } from '@dnd-kit/sortable';
 import { createPortal } from 'react-dom';
+import { AddTaskModal } from './addTaskModal';
 
 export const Board = () => {
-  const { columns, activeId, setActiveId, moveTask } = useKanbanStore();
+  const { columns, activeId, setActiveId, moveTask, addTask } = useKanbanStore();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeColumnId, setActiveColumnId] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -87,6 +92,19 @@ export const Board = () => {
     .flatMap((col) => col.tasks)
     .find((task) => task.id === activeId);
 
+  const handleOpenModal = (columnId: string) => {
+    setActiveColumnId(columnId);
+    setIsModalOpen(true);
+  };
+
+  const handleCreateTask = (title: string) => {
+    if (activeColumnId) {
+      addTask(activeColumnId, title);
+    }
+  };
+
+  const activeColumnTitle = columns.find(c => c.id === activeColumnId)?.title || '';
+
   return (
     <DndContext 
         sensors={sensors} 
@@ -97,7 +115,7 @@ export const Board = () => {
     >
       <div className="flex h-full gap-6 overflow-x-auto pb-4 items-start">
         {columns.map((col) => (
-          <ColumnContainer key={col.id} column={col} />
+          <ColumnContainer key={col.id} column={col} onAddTask={handleOpenModal}/>
         ))}
       </div>
 
@@ -107,6 +125,13 @@ export const Board = () => {
         </DragOverlay>,
         document.body
       )}
+
+      <AddTaskModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleCreateTask}
+        columnTitle={activeColumnTitle}
+      />
     </DndContext>
   );
 };

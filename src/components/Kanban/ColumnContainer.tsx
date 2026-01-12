@@ -7,11 +7,11 @@ import { useKanbanStore } from '../../store/useKanbanStore';
 
 interface ColumnContainerProps {
   column: Column;
+  onAddTask: (columnId: string) => void;
 }
 
-export const ColumnContainer = ({ column }: ColumnContainerProps) => {
+export const ColumnContainer = ({ column, onAddTask }: ColumnContainerProps) => {
   const taskIds = column.tasks.map(task => task.id);
-  const addTask = useKanbanStore((state) => state.addTask);
 
   const { setNodeRef: setDroppableNodeRef } = useDroppable({
     id: column.id,
@@ -32,7 +32,7 @@ export const ColumnContainer = ({ column }: ColumnContainerProps) => {
             </span>
         </div>
         <div className="flex gap-1">
-            <button className="p-1 hover:bg-white/5 rounded text-text-secondary hover:text-text-main transition-colors">
+            <button onClick={() => onAddTask(column.id)} className="p-1 hover:bg-white/5 rounded text-text-secondary hover:text-text-main transition-colors">
                 <Plus size={18} />
             </button>
             <button className="p-1 hover:bg-white/5 rounded text-text-secondary hover:text-text-main transition-colors">
@@ -48,7 +48,7 @@ export const ColumnContainer = ({ column }: ColumnContainerProps) => {
             ))}
         </SortableContext>
         
-        <button onClick={() => addTask(column.id)} className="w-full py-3 rounded-xl border border-dashed border-border-color text-text-secondary text-sm hover:bg-white/5 hover:border-primary/50 hover:text-primary transition-all flex items-center justify-center gap-2 opacity-50 hover:opacity-100">
+        <button onClick={() => onAddTask(column.id)} className="w-full py-3 rounded-xl border border-dashed border-border-color text-text-secondary text-sm hover:bg-white/5 hover:border-primary/50 hover:text-primary transition-all flex items-center justify-center gap-2 opacity-50 hover:opacity-100">
             <Plus size={16} />
             Add Task
         </button>

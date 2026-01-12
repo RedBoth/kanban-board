@@ -8,7 +8,7 @@ interface KanbanStore {
   setActiveId: (id: string | null) => void;
   moveTask: (activeId: string, overId: string) => void;
   
-  addTask: (columnId: string) => void;
+  addTask: (columnId: string, title: string) => void;
   deleteTask: (taskId: string) => void;
 }
 
@@ -81,15 +81,15 @@ export const useKanbanStore = create<KanbanStore>((set) => ({
     return { columns: newColumns };
   }),
 
-  addTask: (columnId) => set((state) => {
+  addTask: (columnId, title) => set((state) => {
     const newColumns = [...state.columns];
     const columnIndex = newColumns.findIndex((col) => col.id === columnId);
     
     if (columnIndex === -1) return state;
 
     const newTask: Task = {
-      id: crypto.randomUUID(), // Genera ID único automáticamente
-      title: `New Task ${newColumns[columnIndex].tasks.length + 1}`, // Título temporal
+      id: crypto.randomUUID(),
+      title: title,
       priority: 'Low',
       comments: 0
     };
