@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Opcional: Para asegurar que el html y body ocupen toda la altura y usen el color de fondo base */
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: #0D0D12; /* Tu color 'main-bg' */
+  font-family: 'Inter', sans-serif; /* Si usas la fuente Inter */
+}
