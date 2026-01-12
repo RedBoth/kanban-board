@@ -5,9 +5,11 @@ import { arrayMove } from '@dnd-kit/sortable';
 interface KanbanStore {
   columns: Column[];
   activeId: string | null;
-  
   setActiveId: (id: string | null) => void;
   moveTask: (activeId: string, overId: string) => void;
+  
+  addTask: (columnId: string) => void;
+  deleteTask: (taskId: string) => void;
 }
 
 export const useKanbanStore = create<KanbanStore>((set) => ({
@@ -76,6 +78,31 @@ export const useKanbanStore = create<KanbanStore>((set) => ({
     
     newColumns[overColumnIndex].tasks.splice(targetIndex, 0, movedTask);
 
+    return { columns: newColumns };
+  }),
+
+  addTask: (columnId) => set((state) => {
+    const newColumns = [...state.columns];
+    const columnIndex = newColumns.findIndex((col) => col.id === columnId);
+    
+    if (columnIndex === -1) return state;
+
+    const newTask: Task = {
+      id: crypto.randomUUID(), // Genera ID único automáticamente
+      title: `New Task ${newColumns[columnIndex].tasks.length + 1}`, // Título temporal
+      priority: 'Low',
+      comments: 0
+    };
+
+    newColumns[columnIndex].tasks.push(newTask);
+    return { columns: newColumns };
+  }),
+
+  deleteTask: (taskId) => set((state) => {
+    const newColumns = state.columns.map((col) => ({
+      ...col,
+      tasks: col.tasks.filter((task) => task.id !== taskId)
+    }));
     return { columns: newColumns };
   }),
 }));

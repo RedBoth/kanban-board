@@ -3,6 +3,7 @@ import type { Column } from '../../types';
 import { TaskCard } from './TaskCard';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useDroppable } from '@dnd-kit/core';
+import { useKanbanStore } from '../../store/useKanbanStore';
 
 interface ColumnContainerProps {
   column: Column;
@@ -10,6 +11,7 @@ interface ColumnContainerProps {
 
 export const ColumnContainer = ({ column }: ColumnContainerProps) => {
   const taskIds = column.tasks.map(task => task.id);
+  const addTask = useKanbanStore((state) => state.addTask);
 
   const { setNodeRef: setDroppableNodeRef } = useDroppable({
     id: column.id,
@@ -46,7 +48,7 @@ export const ColumnContainer = ({ column }: ColumnContainerProps) => {
             ))}
         </SortableContext>
         
-        <button className="w-full py-3 rounded-xl border border-dashed border-border-color text-text-secondary text-sm hover:bg-white/5 hover:border-primary/50 hover:text-primary transition-all flex items-center justify-center gap-2 opacity-50 hover:opacity-100">
+        <button onClick={() => addTask(column.id)} className="w-full py-3 rounded-xl border border-dashed border-border-color text-text-secondary text-sm hover:bg-white/5 hover:border-primary/50 hover:text-primary transition-all flex items-center justify-center gap-2 opacity-50 hover:opacity-100">
             <Plus size={16} />
             Add Task
         </button>

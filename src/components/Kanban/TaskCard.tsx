@@ -1,7 +1,8 @@
-import { MessageSquare, MoreHorizontal } from 'lucide-react';
+import { MessageSquare, Trash2 } from 'lucide-react';
 import type { Task } from '../../types/index';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useKanbanStore } from '../../store/useKanbanStore';
 
 interface TaskCardProps {
   task: Task;
@@ -14,6 +15,7 @@ const priorityColors = {
 };
 
 export const TaskCard = ({ task }: TaskCardProps) => {
+  const deleteTask = useKanbanStore((state) => state.deleteTask);
   const {
     setNodeRef,
     attributes,
@@ -57,8 +59,14 @@ export const TaskCard = ({ task }: TaskCardProps) => {
         <span className={`px-2 py-1 rounded text-xs font-medium border ${priorityColors[task.priority]}`}>
           {task.priority}
         </span>
-        <button className="text-text-secondary hover:text-text-main opacity-0 group-hover:opacity-100 transition-opacity">
-            <MoreHorizontal size={16} />
+        <button 
+            onPointerDown={(e) => {
+                e.stopPropagation();
+                deleteTask(task.id);
+            }}
+            className="text-text-secondary hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-1"
+        >
+            <Trash2 size={16} />
         </button>
       </div>
 
