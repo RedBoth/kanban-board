@@ -44,9 +44,14 @@ export const useKanbanStore = create<KanbanStore>((set) => ({
     const activeColumnIndex = state.columns.findIndex((col) => 
       col.tasks.some((task) => task.id === activeId)
     );
-    const overColumnIndex = state.columns.findIndex((col) => 
+
+    let overColumnIndex = state.columns.findIndex((col) => 
       col.tasks.some((task) => task.id === overId)
     );
+
+    if (overColumnIndex === -1) {
+      overColumnIndex = state.columns.findIndex((col) => col.id === overId);
+    }
     
     if (activeColumnIndex === -1 || overColumnIndex === -1) return state;
 
@@ -58,12 +63,9 @@ export const useKanbanStore = create<KanbanStore>((set) => ({
 
     if (activeColumnIndex === overColumnIndex) {
       if (activeTaskIndex === overTaskIndex) return state;
-
       const newTasks = arrayMove(activeColumn.tasks, activeTaskIndex, overTaskIndex);
-      
       const newColumns = [...state.columns];
       newColumns[activeColumnIndex] = { ...activeColumn, tasks: newTasks };
-      
       return { columns: newColumns };
     }
 
@@ -71,6 +73,7 @@ export const useKanbanStore = create<KanbanStore>((set) => ({
     const [movedTask] = newColumns[activeColumnIndex].tasks.splice(activeTaskIndex, 1);
     
     const targetIndex = overTaskIndex >= 0 ? overTaskIndex : overColumn.tasks.length;
+    
     newColumns[overColumnIndex].tasks.splice(targetIndex, 0, movedTask);
 
     return { columns: newColumns };

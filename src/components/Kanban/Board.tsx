@@ -41,12 +41,23 @@ export const Board = () => {
 
     const isActiveTask = columns.some(col => col.tasks.some(task => task.id === activeId));
     const isOverTask = columns.some(col => col.tasks.some(task => task.id === overId));
+    
+    const isOverColumn = columns.some(col => col.id === overId);
 
     if (!isActiveTask) return;
 
     if (isActiveTask && isOverTask) {
         const activeColumn = columns.find(col => col.tasks.some(t => t.id === activeId));
         const overColumn = columns.find(col => col.tasks.some(t => t.id === overId));
+        
+        if (activeColumn !== overColumn) {
+            moveTask(activeId, overId);
+        }
+    }
+
+    if (isActiveTask && isOverColumn) {
+        const activeColumn = columns.find(col => col.tasks.some(t => t.id === activeId));
+        const overColumn = columns.find(col => col.id === overId);
         
         if (activeColumn !== overColumn) {
             moveTask(activeId, overId);
