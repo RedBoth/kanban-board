@@ -1,5 +1,7 @@
 import { MessageSquare, MoreHorizontal } from 'lucide-react';
 import type { Task } from '../../types/index';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface TaskCardProps {
   task: Task;
@@ -12,8 +14,44 @@ const priorityColors = {
 };
 
 export const TaskCard = ({ task }: TaskCardProps) => {
+  const {
+    setNodeRef,
+    attributes,
+    listeners,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({
+    id: task.id,
+    data: {
+      type: 'Task',
+      task,
+    },
+  });
+
+  const style = {
+    transition,
+    transform: CSS.Transform.toString(transform),
+  };
+
+  if (isDragging) {
+    return (
+      <div
+        ref={setNodeRef}
+        style={style}
+        className="bg-card-bg opacity-30 p-4 rounded-xl border border-primary/50 h-[100px]"
+      />
+    );
+  }
+
   return (
-    <div className="bg-card-bg p-4 rounded-xl border border-border-color shadow-sm hover:border-primary/50 cursor-grab active:cursor-grabbing group transition-colors">
+    <div 
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="bg-card-bg p-4 rounded-xl border border-border-color shadow-sm hover:border-primary/50 cursor-grab active:cursor-grabbing group transition-colors touch-none"
+    >
       
       <div className="flex justify-between items-start mb-3">
         <span className={`px-2 py-1 rounded text-xs font-medium border ${priorityColors[task.priority]}`}>

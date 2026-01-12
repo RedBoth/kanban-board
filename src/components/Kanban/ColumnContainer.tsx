@@ -1,14 +1,26 @@
 import { MoreHorizontal, Plus } from 'lucide-react';
 import type { Column } from '../../types';
 import { TaskCard } from './TaskCard';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useDroppable } from '@dnd-kit/core';
 
 interface ColumnContainerProps {
   column: Column;
 }
 
 export const ColumnContainer = ({ column }: ColumnContainerProps) => {
+  const taskIds = column.tasks.map(task => task.id);
+
+  const { setNodeRef: setDroppableNodeRef } = useDroppable({
+    id: column.id,
+    data: {
+        type: 'Column',
+        column
+    }
+  });
+
   return (
-    <div className="w-[350px] h-full flex flex-col flex-shrink-0">
+    <div ref={setDroppableNodeRef} className="w-[350px] h-full flex flex-col flex-shrink-0">
       
       <div className="flex items-center justify-between mb-4 px-1">
         <div className="flex items-center gap-2">
@@ -28,9 +40,11 @@ export const ColumnContainer = ({ column }: ColumnContainerProps) => {
       </div>
 
       <div className="flex-1 overflow-y-auto pr-2 space-y-3 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-        {column.tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
-        ))}
+        <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
+            {column.tasks.map((task) => (
+              <TaskCard key={task.id} task={task} />
+            ))}
+        </SortableContext>
         
         <button className="w-full py-3 rounded-xl border border-dashed border-border-color text-text-secondary text-sm hover:bg-white/5 hover:border-primary/50 hover:text-primary transition-all flex items-center justify-center gap-2 opacity-50 hover:opacity-100">
             <Plus size={16} />
