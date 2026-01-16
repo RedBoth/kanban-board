@@ -14,13 +14,15 @@ import { ColumnContainer } from './ColumnContainer';
 import { useKanbanStore } from '../../store/useKanbanStore';
 import { TaskCard } from './TaskCard';
 import { createPortal } from 'react-dom';
-import { AddTaskModal } from './AddTaskModal';
+import { TaskModal } from './TaskModal';
+import type { Task, Priority } from '../../types';
 
 export const Board = () => {
-  const { columns, activeId, setActiveId, moveTask, addTask } = useKanbanStore();
+  const { columns, activeId, setActiveId, moveTask, addTask, updateTask } = useKanbanStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeColumnId, setActiveColumnId] = useState<string | null>(null);
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -91,14 +93,23 @@ export const Board = () => {
     .flatMap((col) => col.tasks)
     .find((task) => task.id === activeId);
 
-  const handleOpenModal = (columnId: string) => {
+  const handleOpenCreateModal = (columnId: string) => {
     setActiveColumnId(columnId);
+    setTaskToEdit(null);
     setIsModalOpen(true);
   };
 
-  const handleCreateTask = (title: string) => {
-    if (activeColumnId) {
-      addTask(activeColumnId, title);
+  const handleOpenEditModal = (task: Task) => {
+    setTaskToEdit(task);
+    setActiveColumnId(null);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveTask = (data: { title: string; description: string; priority: Priority }) => {
+    if (taskToEdit) {
+        updateTask(taskToEdit.id, data);
+    } else if (activeColumnId) {
+        addTask(activeColumnId, data);
     }
   };
 
@@ -114,21 +125,23 @@ export const Board = () => {
     >
       <div className="flex h-full gap-6 overflow-x-auto pb-4 items-start">
         {columns.map((col) => (
-          <ColumnContainer key={col.id} column={col} onAddTask={handleOpenModal}/>
+          <ColumnContainer key={col.id} column={col} onAddTask={handleOpenCreateModal} onEditTask={handleOpenEditModal}/>
         ))}
       </div>
 
       {createPortal(
         <DragOverlay>
-          {activeTask ? <TaskCard task={activeTask} /> : null}
+          {activeTask ? <TaskCard task={activeTask} onClick={() => {}}/> : null}
         </DragOverlay>,
         document.body
       )}
 
-      <AddTaskModal
+      <TaskModal
+        key={taskToEdit?.id ?? 'create-modal'}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onConfirm={handleCreateTask}
+        onConfirm={handleSaveTask}
+        taskToEdit={taskToEdit}
         columnTitle={activeColumnTitle}
       />
     </DndContext>

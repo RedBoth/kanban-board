@@ -1,5 +1,5 @@
 import { MoreHorizontal, Plus } from 'lucide-react';
-import type { Column } from '../../types';
+import type { Column, Task } from '../../types';
 import { TaskCard } from './TaskCard';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useDroppable } from '@dnd-kit/core';
@@ -7,9 +7,10 @@ import { useDroppable } from '@dnd-kit/core';
 interface ColumnContainerProps {
   column: Column;
   onAddTask: (columnId: string) => void;
+  onEditTask: (task: Task) => void;
 }
 
-export const ColumnContainer = ({ column, onAddTask }: ColumnContainerProps) => {
+export const ColumnContainer = ({ column, onAddTask, onEditTask }: ColumnContainerProps) => {
   const taskIds = column.tasks.map(task => task.id);
 
   const { setNodeRef: setDroppableNodeRef } = useDroppable({
@@ -43,7 +44,7 @@ export const ColumnContainer = ({ column, onAddTask }: ColumnContainerProps) => 
       <div className="flex-1 overflow-y-auto pr-2 space-y-3 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
             {column.tasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
+              <TaskCard key={task.id} task={task} onClick={onEditTask}/>
             ))}
         </SortableContext>
         

@@ -6,6 +6,7 @@ import { useKanbanStore } from '../../store/useKanbanStore';
 
 interface TaskCardProps {
   task: Task;
+  onClick: (task: Task) => void;
 }
 
 const priorityColors = {
@@ -14,7 +15,7 @@ const priorityColors = {
   Low: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
 };
 
-export const TaskCard = ({ task }: TaskCardProps) => {
+export const TaskCard = ({ task, onClick }: TaskCardProps) => {
   const deleteTask = useKanbanStore((state) => state.deleteTask);
   const {
     setNodeRef,
@@ -52,6 +53,7 @@ export const TaskCard = ({ task }: TaskCardProps) => {
       style={style}
       {...attributes}
       {...listeners}
+      onClick={() => onClick(task)}
       className="bg-card-bg p-4 rounded-xl border border-border-color shadow-sm hover:border-primary/50 cursor-grab active:cursor-grabbing group transition-colors touch-none"
     >
       

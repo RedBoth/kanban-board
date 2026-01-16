@@ -6,7 +6,8 @@ import { arrayMove } from '@dnd-kit/sortable';
 interface KanbanStore {
   columns: Column[];
   activeId: string | null;
-  addTask: (columnId: string, title: string) => void;
+  addTask: (columnId: string, taskData: { title: string; description?: string; priority: Priority }) => void;
+  updateTask: (taskId: string, newContent: { title: string; description?: string; priority: Priority }) => void;
   deleteTask: (taskId: string) => void;
   setActiveId: (id: string | null) => void;
   moveTask: (activeId: string, overId: string) => void;
@@ -83,20 +84,33 @@ export const useKanbanStore = create<KanbanStore>()(
       return { columns: newColumns };
     }),
 
-    addTask: (columnId, title) => set((state) => {
+    addTask: (columnId, taskData) => set((state) => {
       const newColumns = [...state.columns];
       const columnIndex = newColumns.findIndex((col) => col.id === columnId);
-      
       if (columnIndex === -1) return state;
 
       const newTask: Task = {
         id: crypto.randomUUID(),
-        title: title,
-        priority: 'Low',
+        title: taskData.title,
+        description: taskData.description || '',
+        priority: taskData.priority,
         comments: 0
       };
 
       newColumns[columnIndex].tasks.push(newTask);
+      return { columns: newColumns };
+    }),
+
+    updateTask: (taskId, newContent) => set((state) => {
+      const newColumns = state.columns.map((col) => ({
+        ...col,
+        tasks: col.tasks.map((task) => {
+          if (task.id === taskId) {
+            return { ...task, ...newContent };
+          }
+          return task;
+        }),
+      }));
       return { columns: newColumns };
     }),
 
