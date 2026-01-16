@@ -13,9 +13,8 @@ import {
 import { ColumnContainer } from './ColumnContainer';
 import { useKanbanStore } from '../../store/useKanbanStore';
 import { TaskCard } from './TaskCard';
-import { arrayMove } from '@dnd-kit/sortable';
 import { createPortal } from 'react-dom';
-import { AddTaskModal } from './addTaskModal';
+import { AddTaskModal } from './AddTaskModal';
 
 export const Board = () => {
   const { columns, activeId, setActiveId, moveTask, addTask } = useKanbanStore();

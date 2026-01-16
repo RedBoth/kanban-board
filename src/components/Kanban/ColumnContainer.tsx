@@ -3,7 +3,6 @@ import type { Column } from '../../types';
 import { TaskCard } from './TaskCard';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useDroppable } from '@dnd-kit/core';
-import { useKanbanStore } from '../../store/useKanbanStore';
 
 interface ColumnContainerProps {
   column: Column;
