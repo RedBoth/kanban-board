@@ -11,6 +11,8 @@ interface KanbanStore {
   deleteTask: (taskId: string) => void;
   setActiveId: (id: string | null) => void;
   moveTask: (activeId: string, overId: string) => void;
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
 }
 
 export const useKanbanStore = create<KanbanStore>()(
@@ -42,7 +44,8 @@ export const useKanbanStore = create<KanbanStore>()(
     ],
     
     activeId: null,
-
+    searchTerm: '',
+    setSearchTerm: (term) => set({ searchTerm: term }),
     setActiveId: (id) => set({ activeId: id }),
 
     moveTask: (activeId, overId) => set((state) => {

@@ -18,7 +18,7 @@ import { TaskModal } from './TaskModal';
 import type { Task, Priority } from '../../types';
 
 export const Board = () => {
-  const { columns, activeId, setActiveId, moveTask, addTask, updateTask } = useKanbanStore();
+  const { columns, activeId, setActiveId, moveTask, addTask, updateTask, searchTerm } = useKanbanStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeColumnId, setActiveColumnId] = useState<string | null>(null);
@@ -113,6 +113,14 @@ export const Board = () => {
     }
   };
 
+  const filteredColumns = columns.map((col) => ({
+    ...col,
+    tasks: col.tasks.filter((task) => 
+        task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        task.description?.toLowerCase().includes(searchTerm.toLowerCase()) // Opcional: buscar también en descripción
+    )
+  }));
+
   const activeColumnTitle = columns.find(c => c.id === activeColumnId)?.title || '';
 
   return (
@@ -124,8 +132,13 @@ export const Board = () => {
         onDragEnd={handleDragEnd}
     >
       <div className="flex h-full gap-6 overflow-x-auto pb-4 items-start">
-        {columns.map((col) => (
-          <ColumnContainer key={col.id} column={col} onAddTask={handleOpenCreateModal} onEditTask={handleOpenEditModal}/>
+        {filteredColumns.map((col) => (
+          <ColumnContainer 
+            key={col.id} 
+            column={col} 
+            onAddTask={handleOpenCreateModal} 
+            onEditTask={handleOpenEditModal}
+          />
         ))}
       </div>
 
